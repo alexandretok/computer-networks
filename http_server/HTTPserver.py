@@ -48,8 +48,8 @@ while True:
 		arquivo = arquivo.split()[1]
 	except:
 		http_response = """\
-HTTP/1.1 500 Bad Request \r\n\r\n
-<html><head></head><body><h2>Erro 400</h2><h3>Sua requisicao e invalida. Utilize o metodo GET</h3><a href="javascript:history.back();">Voltar</a></body></html>\r\n
+HTTP/1.1 500 Internal Server Error \r\n\r\n
+<html><head></head><body><h2>Erro 500</h2><h3>Ops, um erro desconhecido ocorreu.</h3><a href="javascript:history.back();">Voltar</a></body></html>\r\n
 """
 		# servidor retorna o que foi solicitado pelo cliente (neste caso a resposta e generica)
 		client_connection.send(http_response)
