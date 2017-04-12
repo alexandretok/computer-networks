@@ -51,6 +51,11 @@ while True:
 HTTP/1.1 500 Bad Request \r\n\r\n
 <html><head></head><body><h2>Erro 400</h2><h3>Sua requisicao e invalida. Utilize o metodo GET</h3><a href="javascript:history.back();">Voltar</a></body></html>\r\n
 """
+		# servidor retorna o que foi solicitado pelo cliente (neste caso a resposta e generica)
+		client_connection.send(http_response)
+		# encerra a conexao
+		client_connection.close()
+		continue
 
 
 	# Remove a barra do inicio do arquivo
