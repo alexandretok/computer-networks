@@ -35,38 +35,62 @@ while True:
 	# o metodo .recv recebe os dados enviados por um cliente atraves do socket
 	request = client_connection.recv(1024)
 	# imprime na tela o que o cliente enviou ao servidor
-	# print request
+	print "\n" + request
 
-	# Separa o request por linha, a primeira linha pelos espacos e depois remove o primeiro caractere (a barra) do segundo elemento
-	print request.split('\n')[0]
-	arquivo = request.split('\n')[0].split()[1][1:]
-	metodo = request.split('\n')[0].split()[0]
-	print metodo
+	try:
+		# Separa o request por linha e guarda a primeira
+		arquivo = request.split('\n')[0]
+
+		# Separa a primeira linha por espacos e pega o primeiro item
+		metodo = arquivo.split()[0]
+
+		# Separa a primeira linha por espacos e pega o segundo item
+		arquivo = arquivo.split()[1]
+	except:
+		http_response = """\
+HTTP/1.1 500 Bad Request \r\n\r\n
+<html><head></head><body><h2>Erro 400</h2><h3>Sua requisicao e invalida. Utilize o metodo GET</h3><a href="javascript:history.back();">Voltar</a></body></html>\r\n
+"""
+
+
+	# Remove a barra do inicio do arquivo
+	arquivo = arquivo[1:]
+
+	if arquivo == "":
+		arquivo = 'index.html'
+	
+	print "\nMetodo: " + metodo
 	print "Arquivo solicitado: " + arquivo
 
 	if metodo != 'GET':
+		# Se o metodo utilizado nao foi o GET, envia erro 400
 		http_response = """\
-		HTTP/1.1 400 Bad Request \r\n\r\n
-		<html><head></head><body><h2>Sua requisicao e invalida. Utilize o metodo GET</h2><a href="javascript:history.back();">Voltar</a></body></html>\r\n
-		"""
+HTTP/1.1 400 Bad Request \r\n\r\n
+<html><head></head><body><h2>Erro 400</h2><h3>Sua requisicao e invalida. Utilize o metodo GET</h3><a href="javascript:history.back();">Voltar</a></body></html>\r\n
+"""
+		print "400 Bad Request"
 	else:
-
-		if arquivo == "":
-			arquivo = 'index.html'
 		if os.path.isfile(arquivo):
 			file = open(arquivo, 'r')
+
 			# declaracao da resposta do servidor
 			http_response = """\
-	HTTP/1.1 200 OK
-
-	"""
+HTTP/1.1 200 OK \r\n\r\n
+"""
+			# Adiciona o conteudo do arquivo a resposta do servidor
 			http_response += file.read()
+
+			print "200 OK"
+
+			# Fecha o arquivo
 			file.close()
 		else:
+			# Se o arquivo nao existir, envia erro 404
 			http_response = """
 			HTTP/1.1 404 Not Found\r\n\r\n
-	<html><head></head><body><h3>Que pena, o arquivo solicitado nao foi encontrado.<br>Tente novamente proximo semestre.</h3></body></html>\r\n
-	"""
+<html><head></head><body><h2>Erro 404</h2><h3>Que pena, o arquivo solicitado nao foi encontrado.<br>Tente novamente proximo semestre.</h3><a href="javascript:history.back();">Voltar</a></body></html>\r\n
+"""
+			print "404 Not Found"
 	
 	# servidor retorna o que foi solicitado pelo cliente (neste caso a resposta e generica)
 	client_connection.send(http_response)
